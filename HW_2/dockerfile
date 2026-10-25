@@ -1,0 +1,16 @@
+FROM python:3.12-slim
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+# Create an unprivileged user (stateless container, no local /data folder)
+RUN useradd --create-home --uid 10001 appuser
+USER appuser
+
+ENV APP_GREETING="Hello from CENG413 HW2"
+EXPOSE 8000
+CMD ["gunicorn", "-b", "0.0.0.0:8000", "app:app"]
